@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
+import sys
+
 import scrapy
 
-from scraper_redam.exceptions import MissingEndRecordId
 from scraper_redam.items import RedamItem
 
 
@@ -21,7 +22,8 @@ class RedamSpider(scrapy.Spider):
         except ValueError:
             reason = 'You need to enter an upper limit for record id to parse.'
             reason += '\n    scrapy crawl redam -a start_id=1 end_id=3000\n'
-            raise MissingEndRecordId(reason)
+            print(reason)
+            sys.exit(1)
 
     def start_requests(self):
         if self.start_id is None:
