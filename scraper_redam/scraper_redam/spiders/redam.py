@@ -83,7 +83,7 @@ def get_debt(response):
     amount = 0
     for i in match:
         amount += to_number(i.extract())
-    return match.strip()
+    return amount
 
 
 def to_number(string):
