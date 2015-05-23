@@ -20,8 +20,8 @@ class RedamSpider(scrapy.Spider):
         try:
             self.end_id = int(end_id)
         except ValueError:
-            reason = 'You need to enter an upper limit for record id to parse.'
-            reason += '\n    scrapy crawl redam -a start_id=1 end_id=3000\n'
+            reason = 'Error: You need to enter an upper limit for record id to parse.'
+            reason += '\n    scrapy crawl redam -a start_id=1 -a end_id=3000\n'
             print(reason)
             sys.exit(1)
 
@@ -41,7 +41,7 @@ class RedamSpider(scrapy.Spider):
     def parse(self, response):
         item = RedamItem()
         item['url'] = response.url
-        with open(response.meta['id'] + '.html', 'w') as handle:
+        with open(str(response.meta['id']) + '.html', 'w') as handle:
             handle.write(response.content)
 
         return item
