@@ -3,6 +3,7 @@ import re
 import sys
 
 import scrapy
+import urllib
 
 from scraper_redam.items import RedamItem
 
@@ -35,12 +36,14 @@ class RedamSpider(scrapy.Spider):
         scrapy.log.msg("Will scraping from record {} to {}".format(start, end), level=scrapy.log.INFO)
 
         for i in range(start, end + 1):
-            url = 'http://casillas.pj.gob.pe/redamWeb/_rlvid.jsp.faces'
-            url += '?_rap=pc_Index.obtenerDeudor&_rvip=/index.jsp&idDeudor=' + str(i)
-            yield scrapy.Request(url, meta={'id': i})
+            url = 'http://casillas.pj.gob.pe/redamWeb/_rlvid.jsp.faces' + \
+                  '?_rap=pc_Index.obtenerDeudor&_rvip=/index.jsp&idDeudor={index}'.format(index=i)
+            yield scrapy.Request(url,self.parse, meta={'id': i,})
 
     def parse(self, response):
         item = RedamItem()
+        index = response.meta['id']
+
         item['url'] = response.url
         item['given_names'] = get_given_names(response)
         item['paternal_surname'] = get_paternal_surname(response)
@@ -48,10 +51,25 @@ class RedamSpider(scrapy.Spider):
         item['dni'] = get_dni(response)
         item['debt'] = get_debt(response)
         item['bond'] = get_bond(response)
-        with open(str(response.meta['id']) + '.html', 'w') as handle:
-            handle.write(response.body)
 
+        with open("html/" + str(index) + '.html', 'w') as handle:
+            handle.write(response.body)
+        self.render_screenshot(index, item['dni'])
         return item
+
+
+def render_screenshot(index, dni):
+    # Urlify url to go appended as a parameter to the Splash server.
+    url = 'http://casillas.pj.gob.pe/redamWeb/_rlvid.jsp.faces' + \
+            '%3f%5frap%3dpc%5fIndex.obtenerDeudor%26%5frvip%3d%2findex%2ejsp%26idDeudor%3d{index}' .format(index=index)
+    splash_render_url='http://localhost:8050/render.png?url={url}&render_all=1&wait=0.5'.format(url=url)
+    filename = "img/" + str(dni) + ".png"
+    try:
+        urllib.urlretrieve(splash_render_url, filename)
+    except:
+        return None
+    else:
+        return filename
 
 
 def get_given_names(response):

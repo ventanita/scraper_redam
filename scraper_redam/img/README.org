@@ -1,0 +1,4 @@
+
+* Screenshot files
+
+Here lie the screenshot files downloaded by the scrapper. They are in png format.
