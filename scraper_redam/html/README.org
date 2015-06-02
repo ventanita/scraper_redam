@@ -1,0 +1,4 @@
+
+* HTML files
+
+Here lie the html files downloaded by the scrapper
