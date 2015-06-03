@@ -54,7 +54,7 @@ class RedamSpider(scrapy.Spider):
 
         with open("html/" + str(index) + '.html', 'w') as handle:
             handle.write(response.body)
-        self.render_screenshot(index, item['dni'])
+        render_screenshot(index, item['dni'])
         return item
 
 
